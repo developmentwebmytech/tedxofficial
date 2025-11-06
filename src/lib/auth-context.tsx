@@ -21,18 +21,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
   async function refreshUser() {
-    try {
-      const res = await fetch("/api/user/me");
-      if (!res.ok) {
-        setUser(null);
-        return;
-      }
-      const data = await res.json();
-      setUser(data.user);
-    } catch {
+  try {
+    const res = await fetch("/api/user/me", {
+      credentials: "include", // 👈 this line sends cookies!
+    });
+
+    if (!res.ok) {
       setUser(null);
+      return;
     }
+
+    const data = await res.json();
+    setUser(data.user);
+  } catch {
+    setUser(null);
   }
+}
+
 
   useEffect(() => {
     refreshUser();
